@@ -16,7 +16,7 @@
 
 犬飼への処分は迅速だった。
 
-\*\*『懲戒解雇（ちょうかいかいこ）』\*\*。
+**『懲戒解雇（ちょうかいかいこ）』**。
 
 会社にとって最も重い処分だ。退職金は不支給。
 
@@ -48,7 +48,7 @@
 
 
 
-\*\*『諭旨退職（ゆしたいしょく）』\*\*
+**『諭旨退職（ゆしたいしょく）』**
 
 
 
@@ -132,7 +132,7 @@
 
 
 
-「\*\*『自己都合退職（じこつごうたいしょく）』\*\*です。
+「**『自己都合退職（じこつごうたいしょく）』**です。
 
 　人事の人には引き止められましたけど、振り切ってきました」
 
@@ -262,11 +262,15 @@
 
 ---
 
+<div class="route-ending-section">
 
+### Route B - True Ending「告発」完
+
+このルートはここで終了です。エピローグでその後の顛末をご覧ください。
+
+</div>
 
 <div class="choice-buttons">
-
-&nbsp; <a href="reader.html?file=endings/ending_true.md" class="choice-btn">エピローグへ</a>
-
+  <a href="reader.html?file=endings/ending_true.md" class="choice-btn">エピローグへ</a>
 </div>
 

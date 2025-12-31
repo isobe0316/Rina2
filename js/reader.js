@@ -58,6 +58,24 @@ const backgroundKeywords = {
     
     // 晴れ・夜
     'images/bg_window_cloudy_day.jpg': ['曇り空が広がって', '曇った空の下'],
+    
+    // === イベント画像 ===
+    // route_a2用の特殊イベント
+    'images/event_murder_ashtray.jpg': ['重厚なガラス製の灰皿を取り出した', '梨奈が灰皿を振り上げる', '鈕い音が響いた'],
+    'images/event_battery_fire.jpg': ['UPS（無停電電源装置）のパネルを開けた', 'リミッター、切ります', '猛烈な白煙が噴き出した'],
+    'images/event_burning_embrace.jpg': ['爆発的な赤い閃光が視界を埋め尽くす', '炎の中で、私は梨奈を抱きしめた', '骨まで溶かす熱風'],
+    
+    // 偽造契約書関連
+    'images/event_forged_document_closeup.jpg': ['契約書の偽造を命じられた', '震える手で、架空の署名をなぞった', '偽造した契約書がある'],
+    
+    // 裏帳簿暴露
+    'images/event_ledger_revelation.jpg': ['裏帳簿が表示された', '改ざん前の数値', '苦悩を綴った日記'],
+    
+    // 監査関連
+    'images/event_audit_tension.jpg': ['内部監査室の人間がフロアを歩いている', '会計監査が始まった', '監査の緊張'],
+    
+    // トイレでの親密シーン
+    'images/event_toilet_intimacy.jpg': ['トイレの個室に鍵を換けて二人きり', '狭い密室で向き合う'],
     'images/bg_window_clear_night.jpg': ['3月28日 金曜日 21:00', '星が見える']
 };
 
@@ -483,6 +501,7 @@ const bgViewBtn = document.getElementById('bg-view-btn');
 if (bgViewBtn) {
     let isViewingBg = false;
     let previousOpacity = bgOpacitySlider ? bgOpacitySlider.value : 50;
+    let savedScrollPosition = 0;
     
     const iconImage = bgViewBtn.querySelector('.icon-image');
     const iconClose = bgViewBtn.querySelector('.icon-close');
@@ -496,6 +515,7 @@ if (bgViewBtn) {
         
         if (!isViewingBg) {
             // 背景表示モード
+            savedScrollPosition = window.scrollY; // スクロール位置を保存
             previousOpacity = bgOpacitySlider ? bgOpacitySlider.value : 50;
             if (bgOpacitySlider) {
                 bgOpacitySlider.value = 100;
@@ -529,6 +549,9 @@ if (bgViewBtn) {
             if (iconClose) iconClose.style.display = 'none';
             bgViewBtn.title = '背景画像のみを表示';
             isViewingBg = false;
+            
+            // 保存したスクロール位置に戻る
+            window.scrollTo(0, savedScrollPosition);
         }
     });
 }
@@ -666,30 +689,39 @@ function executeEffect(cmdText) {
 // 怖いメッセージに特殊効果を適用
 function applyHorrorTextEffects() {
     const contentDiv = document.getElementById('content');
-    if (!contentDiv) return;
+    if (!contentDiv) {
+        console.error('Content div not found!');
+        return;
+    }
     
     // 全ての<strong>タグを取得
     const strongTags = contentDiv.querySelectorAll('strong');
     
+    console.log('=== Horror Text Effect Debug ===');
     console.log('Total strong tags found:', strongTags.length);
     
-    strongTags.forEach(tag => {
-        const text = tag.textContent;
+    let effectCount = 0;
+    strongTags.forEach((tag, index) => {
+        const text = tag.textContent.trim();
         
         // デバッグ：全てのstrongタグの内容をログ出力
-        console.log('Checking strong tag:', text);
+        console.log(`[${index}] Strong tag text:`, text);
         
-        // 『』または「」を含むテキストに効果を適用
-        // （例：『ニゲテ』、『ユルサナイ』、『仮払金』、硝子の箱など）
-        const hasQuotes = text.includes('『') || text.includes('』');
+        // 『』を含むテキストに効果を適用
+        const hasQuotes = text.includes('『') && text.includes('』');
         // 特定のキーワード（「硝子」「箱」など不気味な単語）も対象
-        const hasSpookyWord = /硝子|箱|沈む|溶ける|壊れる|消える/.test(text);
+        const hasSpookyWord = /硝子|箱|沈む|溶ける|壊れる|消える|ミサキ|美咲/.test(text);
+        
+        console.log(`  hasQuotes: ${hasQuotes}, hasSpookyWord: ${hasSpookyWord}`);
         
         if (hasQuotes || hasSpookyWord) {
             tag.classList.add('horror-text');
-            console.log('✓ Horror text detected and class added:', text);
+            effectCount++;
+            console.log(`  ✓ APPLIED horror-text class to:`, text);
         }
     });
+    
+    console.log(`=== Total effects applied: ${effectCount} ===`);
 }
 
 // backgroundKeywordsをグローバルに公開（設定画面から使用するため）

@@ -371,7 +371,7 @@ body {
 .reader-container {
     max-width: 900px;
     margin: 0 auto;
-    padding: 2rem 1rem;
+    padding: 2rem 2.5rem;
 }
 
 .reader-nav {
@@ -854,15 +854,15 @@ body {
 
 /* 怖いメッセージのスタイル */
 .horror-text {
-    color: #ff0000;
+    color: #cc0000;
     font-weight: bold;
-    text-shadow: 0 0 5px rgba(255, 0, 0, 0.8),
-                 0 0 10px rgba(255, 0, 0, 0.6),
-                 2px 2px 3px rgba(0, 0, 0, 0.8);
-    animation: horror-pulse 2s ease-in-out infinite;
+    background: linear-gradient(180deg, rgba(255,0,0,0.05) 0%, rgba(255,0,0,0.1) 100%);
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
+    text-shadow: 0 0 3px rgba(255, 0, 0, 0.3);
     display: inline-block;
-    font-size: 1.2em;
-    letter-spacing: 0.1em;
+    font-size: 1.05em;
+    letter-spacing: 0.05em;
 }
 
 @keyframes horror-pulse {
@@ -877,6 +877,29 @@ body {
                      0 0 20px rgba(255, 0, 0, 0.8),
                      2px 2px 5px rgba(0, 0, 0, 0.9);
     }
+}
+
+/* ルート完結セクション */
+.route-ending-section {
+    background: linear-gradient(135deg, rgba(139,0,0,0.1) 0%, rgba(80,0,0,0.15) 100%);
+    border-left: 4px solid var(--accent);
+    padding: 1.5rem 2rem;
+    margin: 3rem 0 2rem 0;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.route-ending-section h3 {
+    color: var(--accent);
+    margin-bottom: 0.8rem;
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.route-ending-section p {
+    color: rgba(255,255,255,0.8);
+    line-height: 1.6;
+    margin: 0;
 }
 
 /* プログレスバーのスタイル */
