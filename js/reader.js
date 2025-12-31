@@ -11,7 +11,7 @@ const backgroundKeywords = {
     'images/office_night.jpg': ['深夜の誰もいないフロア', '守衛すら帰った深夜', '残業で深夜'],
     'images/bg_office_morning.jpg': ['出社した朝のオフィス', '朝のオフィスフロア'],
     'images/bg_office_sunset.jpg': ['夕方のオフィスに差し込む', '退勤時間の夕焼け'],
-    'images/glass_meeting_room.jpg': ['ガラス張りの会議室B', '外からは中がよく見える会議室'],
+    'images/glass_meeting_room.jpg': ['4月2日 水曜日 20:00', '外からは中がよく見える会議室'],
     'images/meeting_room_dark_blinds.jpg': ['第3会議室のブラインドを閉めた', 'ブラインドを閉めた密室'],
     'images/office_corridor.jpg': ['フロアの一番奥にある廃棄されたフィルキャビ', '廃棄された廃気の間'],
     
@@ -23,17 +23,17 @@ const backgroundKeywords = {
     // モニター・画面
     'images/monitor_accounting_data.jpg': ['長期滞留仮払金のデータが踊る', '画面が明滅していた経理データ', 'エクセルシートの異常な数字'],
     'images/event_screen_glow.jpg': ['モニターの青白い光だけが', '画面の光に照らされて'],
-    'images/keyboard_closeup.jpg': ['キーボードを打つ指先', '承認ボタンをクリックした'],
+    'images/keyboard_closeup.jpg': ['Enterキーを押す音が、銃声のように響いた。', '承認ボタンをクリックした'],
     
     // USB・証拠品
-    'images/usb_memory_hand.jpg': ['USBメモリを取り出して', '証拠をコピーしたUSB', 'データをコピーしたメモリ'],
+    'images/usb_memory_hand.jpg': ['私は上着の内ポケットから、USBメモリを取り出した', '証拠をコピーしたUSB', 'データをコピーしたメモリ'],
     
     // トイレ・個室
     'images/toilet_stall_narrow.jpg': ['トイレの個室に鍵を掛けた', '狭い密室のトイレ'],
     
     // カフェ・外出
-    'images/cafe_window.jpg': ['純喫茶「琥珀」の窓際席', 'パンケーキを頼んだカフェ'],
-    'images/cafe_table_closeup.jpg': ['テーブル越しに向き合って', 'カフェの席に座る'],
+    'images/cafe_window.jpg': ['パンケーキを頼んだカフェ', 'パンケーキを頼んだカフェ'],
+    'images/cafe_table_closeup.jpg': ['3月30日 日曜日 11:00', 'カフェの席に座る'],
     'images/train_platform.jpg': ['駅のホームで電車を待っていた', '改札を出た先のホーム'],
     'images/rainy_crossing.jpg': ['雨の交差点を渡る', '横断歩道の白線'],
     
@@ -49,7 +49,7 @@ const backgroundKeywords = {
     'images/event_security_camera.jpg': ['防犯カメラのレンズが', '監視カメラの赤いランプ'],
     
     // 室内・個人空間
-    'images/bedroom_night_dark.jpg': ['ベッドの中で眠れなかった', '私の部屋の暗闇'],
+    'images/bedroom_night_dark.jpg': ['3月29日 土曜日 深夜', '私の部屋の暗闇'],
     'images/empty_desk.jpg': ['空っぽのデスクに残された', '荷物をまとめた後の机', '社員証を返却した後'],
     'images/office_locker_room.jpg': ['ロッカー室の扉を開けて', '更衣室の静寂'],
     
@@ -58,7 +58,7 @@ const backgroundKeywords = {
     
     // 晴れ・夜
     'images/bg_window_cloudy_day.jpg': ['曇り空が広がって', '曇った空の下'],
-    'images/bg_window_clear_night.jpg': ['清澄な夜空', '星が見える']
+    'images/bg_window_clear_night.jpg': ['3月28日 金曜日 21:00', '星が見える']
 };
 
 // ファイルごとのデフォルト背景画像マッピング
@@ -118,10 +118,31 @@ function detectBackgroundFromContent(content) {
     return null;
 }
 
+// 背景画像の状態管理
+let lastDetectedBackground = null;
+let lastActivityTime = Date.now();
+let inactivityTimer = null;
+
 // スクロール位置に応じて背景画像を動的に切り替え
 function updateBackgroundOnScroll() {
     const content = document.getElementById('content');
     if (!content) return;
+    
+    // アクティビティを記録
+    lastActivityTime = Date.now();
+    
+    // 1分間の非アクティブタイマーをリセット
+    if (inactivityTimer) {
+        clearTimeout(inactivityTimer);
+    }
+    inactivityTimer = setTimeout(() => {
+        // 1分間動きがなかったらデフォルト背景に戻る
+        lastDetectedBackground = null;
+        const defaultBg = getDefaultBackground(currentFile);
+        if (defaultBg) {
+            changeBg(defaultBg);
+        }
+    }, 60000); // 60秒
     
     // 現在表示されている文章ブロックを取得
     const paragraphs = content.querySelectorAll('p, h2, h3');
@@ -137,15 +158,11 @@ function updateBackgroundOnScroll() {
     
     // キーワードから背景画像を検出
     const detectedBg = detectBackgroundFromContent(visibleText);
-    if (detectedBg) {
-        const bgLayer = document.getElementById('bg-image');
-        const currentBg = bgLayer.style.backgroundImage;
-        const newBg = `url('${detectedBg}')`;
-        
-        // 現在と異なる背景が検出された場合のみ切り替え
-        if (currentBg !== newBg) {
-            changeBg(detectedBg);
-        }
+    if (detectedBg && detectedBg !== lastDetectedBackground) {
+        // 新しい背景が検出された場合は切り替え
+        lastDetectedBackground = detectedBg;
+        changeBg(detectedBg);
+        console.log('Background changed to:', detectedBg);
     }
 }
 
@@ -196,6 +213,9 @@ async function renderMarkdown() {
     // markedでHTMLに変換
     const html = marked.parse(processedMarkdown);
     contentDiv.innerHTML = html;
+    
+    // 怖いメッセージに特殊効果を追加
+    applyHorrorTextEffects();
     
     // 背景画像を設定
     setBackgroundForFile(currentFile);
@@ -641,6 +661,35 @@ function executeEffect(cmdText) {
         effectBgm.pause();
         effectSe.pause();
     }
+}
+
+// 怖いメッセージに特殊効果を適用
+function applyHorrorTextEffects() {
+    const contentDiv = document.getElementById('content');
+    if (!contentDiv) return;
+    
+    // 全ての<strong>タグを取得
+    const strongTags = contentDiv.querySelectorAll('strong');
+    
+    console.log('Total strong tags found:', strongTags.length);
+    
+    strongTags.forEach(tag => {
+        const text = tag.textContent;
+        
+        // デバッグ：全てのstrongタグの内容をログ出力
+        console.log('Checking strong tag:', text);
+        
+        // 『』または「」を含むテキストに効果を適用
+        // （例：『ニゲテ』、『ユルサナイ』、『仮払金』、硝子の箱など）
+        const hasQuotes = text.includes('『') || text.includes('』');
+        // 特定のキーワード（「硝子」「箱」など不気味な単語）も対象
+        const hasSpookyWord = /硝子|箱|沈む|溶ける|壊れる|消える/.test(text);
+        
+        if (hasQuotes || hasSpookyWord) {
+            tag.classList.add('horror-text');
+            console.log('✓ Horror text detected and class added:', text);
+        }
+    });
 }
 
 // backgroundKeywordsをグローバルに公開（設定画面から使用するため）

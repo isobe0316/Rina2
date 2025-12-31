@@ -852,6 +852,33 @@ body {
     100% { transform: translate(0) }
 }
 
+/* 怖いメッセージのスタイル */
+.horror-text {
+    color: #ff0000;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255, 0, 0, 0.8),
+                 0 0 10px rgba(255, 0, 0, 0.6),
+                 2px 2px 3px rgba(0, 0, 0, 0.8);
+    animation: horror-pulse 2s ease-in-out infinite;
+    display: inline-block;
+    font-size: 1.2em;
+    letter-spacing: 0.1em;
+}
+
+@keyframes horror-pulse {
+    0%, 100% { 
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.85;
+        transform: scale(1.05);
+        text-shadow: 0 0 10px rgba(255, 0, 0, 1),
+                     0 0 20px rgba(255, 0, 0, 0.8),
+                     2px 2px 5px rgba(0, 0, 0, 0.9);
+    }
+}
+
 /* プログレスバーのスタイル */
 #scroll-progress-bar {
     width: 120px;
