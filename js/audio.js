@@ -25,6 +25,7 @@ class AudioManager {
             choiceMoment: 'audio/choice_moment.mp3',          // 挿入歌：運命の分岐点
             trueEnd: 'audio/true_ed.mp3',                     // True EDテーマ：雨上がりの別れ
             badDeadEnd: 'audio/bad_dead_ed.mp3',              // Bad/Dead EDテーマ：水位と沈殿
+            ashCradle: 'audio/ash_cradle.mp3',                // Bad EDテーマ：灰のゆりかご
             misakiBoxTheme: 'audio/misaki_box_theme.mp3',     // 美咲の箱テーマ：盾にならない箱
             
             // === メインストーリー用BGM 8曲 ===

@@ -10,10 +10,10 @@ const backgroundKeywords = {
     // オフィス・会議室シーン
     'images/office_night.jpg': ['深夜の誰もいないフロア', '守衛すら帰った深夜', '残業で深夜'],
     'images/bg_office_morning.jpg': ['出社した朝のオフィス', '朝のオフィスフロア'],
-    'images/bg_office_sunset.jpg': ['夕方のオフィスに差し込む', '退勤時間の夕焼け'],
+    'images/bg_office_sunset.jpg': ['経理部のフロアに戻ると、犬飼課長が満面の笑みで待っていた。', '退勤時間の夕焼け'],
     'images/glass_meeting_room.jpg': ['4月2日 水曜日 20:00', '外からは中がよく見える会議室'],
-    'images/meeting_room_dark_blinds.jpg': ['第3会議室のブラインドを閉めた', 'ブラインドを閉めた密室'],
-    'images/office_corridor.jpg': ['フロアの一番奥にある廃棄されたフィルキャビ', '廃棄された廃気の間'],
+    'images/meeting_room_dark_blinds.jpg': ['第3会議室（密室）', 'ブラインドを閉めた密室'],
+    'images/office_corridor.jpg': ['4月16日 嵐の前の静けさ', '廃棄された廃気の間'],
     
     // 資料室・システム室
     'images/archive_room.jpg': ['資料室の棚の間を抜けて', '紙の匂いが充満する資料室'],
@@ -29,7 +29,7 @@ const backgroundKeywords = {
     'images/usb_memory_hand.jpg': ['私は上着の内ポケットから、USBメモリを取り出した', '証拠をコピーしたUSB', 'データをコピーしたメモリ'],
     
     // トイレ・個室
-    'images/toilet_stall_narrow.jpg': ['トイレの個室に鍵を掛けた', '狭い密室のトイレ'],
+    'images/toilet_stall_narrow.jpg': ['足をもつれさせながら男子トイレに駆け込んだ。', '狭い密室のトイレ'],
     
     // カフェ・外出
     'images/cafe_window.jpg': ['パンケーキを頼んだカフェ', 'パンケーキを頼んだカフェ'],
@@ -39,7 +39,7 @@ const backgroundKeywords = {
     
     // 雨・窓
     'images/rain_window.jpg': ['雨音だけが部屋に響いて', '窓を叩く雨の音', '雨だけが降り続けていた'],
-    'images/rain_window_day.jpg': ['雨の窓の向こう側', '雨が降り続けている昼間'],
+    'images/rain_window_day.jpg': ['ドアが閉まると、梨奈が小さく息を吐いた。', '雨が降り続けている昼間'],
     'images/bg_rain_window_evening.jpg': ['夕方に雨が降り始める', '雨の夕暮れの窓'],
     'images/event_rain_macro.jpg': ['雨粒が窓を伝う', '雨滴がガラスを流れ落ちる'],
     'images/water_ripples.jpg': ['水面に広がる波紋', '水位が上がっていく'],
@@ -66,16 +66,19 @@ const backgroundKeywords = {
     'images/event_burning_embrace.jpg': ['爆発的な赤い閃光が視界を埋め尽くす', '炎の中で、私は梨奈を抱きしめた', '骨まで溶かす熱風'],
     
     // 偽造契約書関連
-    'images/event_forged_document_closeup.jpg': ['契約書の偽造を命じられた', '震える手で、架空の署名をなぞった', '偽造した契約書がある'],
+    'images/event_forged_document_closeup.jpg': ['これが、例の契約書です', '4月20日 深夜 オフィス', '偽造した契約書があ✖✖'],
     
     // 裏帳簿暴露
     'images/event_ledger_revelation.jpg': ['裏帳簿が表示された', '改ざん前の数値', '苦悩を綴った日記'],
     
     // 監査関連
-    'images/event_audit_tension.jpg': ['内部監査室の人間がフロアを歩いている', '会計監査が始まった', '監査の緊張'],
+    'images/event_audit_tension.jpg': ['5月2日 監査本番', '会計監査が始まった', '監査の緊張'],
+    
+    // 祝杯シーン
+    'images/event_celebration_toast.jpg': ['その夜、梨奈と二人で祝杯を挙げた'],
     
     // トイレでの親密シーン
-    'images/event_toilet_intimacy.jpg': ['トイレの個室に鍵を換けて二人きり', '狭い密室で向き合う'],
+    'images/event_toilet_intimacy.jpg': ['彼女は素早くドアを閉め、再び内鍵をかけた', 'トイレの個室に鍵を換けて二人きり'],
     'images/bg_window_clear_night.jpg': ['3月28日 金曜日 21:00', '星が見える']
 };
 
@@ -89,7 +92,7 @@ const backgroundImages = {
     'routes/route_b1.md': 'images/rain_window.jpg',
     'routes/route_b2.md': 'images/office_night.jpg',
     'endings/ending_true.md': 'images/empty_desk.jpg',
-    'endings/ending_bad.md': 'images/shattered_glass.jpg',
+    'endings/ending_bad.md': 'images/underwater_room.jpg',
     'endings/ending_dead.md': 'images/underwater_room.jpg',
     'endings/ending_normal.md': 'images/rainy_crossing.jpg'
 };
@@ -122,27 +125,36 @@ function setBackgroundForFile(filePath) {
 
 // コンテンツのキーワードに応じて背景画像を検出
 function detectBackgroundFromContent(content) {
+    let bestMatch = null;
+    let bestKeywordLength = 0;
+    
     for (const [imagePath, keywords] of Object.entries(backgroundKeywords)) {
         // ローカルストレージから保存されたキーワードを確認
         const savedKeywords = localStorage.getItem('bgKeywords_' + imagePath);
         const keywordList = savedKeywords ? savedKeywords.split(',').map(k => k.trim()) : keywords;
         
         for (const keyword of keywordList) {
-            if (content.includes(keyword)) {
-                return imagePath;
+            // より長いキーワード（より具体的なマッチ）を優先
+            if (content.includes(keyword) && keyword.length > bestKeywordLength) {
+                bestMatch = imagePath;
+                bestKeywordLength = keyword.length;
             }
         }
     }
-    return null;
+    return bestMatch;
 }
 
 // 背景画像の状態管理
 let lastDetectedBackground = null;
 let lastActivityTime = Date.now();
 let inactivityTimer = null;
+let isViewingBackgroundMode = false; // 背景表示モード中かどうか
 
 // スクロール位置に応じて背景画像を動的に切り替え
 function updateBackgroundOnScroll() {
+    // 背景表示モード中はスクロールによる背景変更を無効化
+    if (isViewingBackgroundMode) return;
+    
     const content = document.getElementById('content');
     if (!content) return;
     
@@ -309,7 +321,11 @@ function playMusicForContent(content, filePath) {
             audioManager.play('trueEnd', { loop: false, fadeIn: true });
             return;
         }
-        if (filePath.includes('ending_bad') || filePath.includes('ending_dead')) {
+        if (filePath.includes('ending_bad')) {
+            audioManager.play('ashCradle', { loop: false, fadeIn: true });
+            return;
+        }
+        if (filePath.includes('ending_dead')) {
             audioManager.play('badDeadEnd', { loop: false, fadeIn: true });
             return;
         }
@@ -515,6 +531,7 @@ if (bgViewBtn) {
         
         if (!isViewingBg) {
             // 背景表示モード
+            isViewingBackgroundMode = true; // グローバルフラグを設定
             savedScrollPosition = window.scrollY; // スクロール位置を保存
             previousOpacity = bgOpacitySlider ? bgOpacitySlider.value : 50;
             if (bgOpacitySlider) {
@@ -552,6 +569,11 @@ if (bgViewBtn) {
             
             // 保存したスクロール位置に戻る
             window.scrollTo(0, savedScrollPosition);
+            
+            // 少し待ってから背景変更を再有効化（スクロール復元後）
+            setTimeout(() => {
+                isViewingBackgroundMode = false;
+            }, 500);
         }
     });
 }
@@ -605,11 +627,11 @@ window.addEventListener('DOMContentLoaded', renderMarkdown);
 
 // 演出キーワードと音声ファイルのマッピング定義
 const SOUND_ASSETS = {
-    '風': 'audio/bgm/wind.mp3',
-    '砕く': 'audio/bgm/crack.mp3',
-    '炎': 'audio/bgm/fire.mp3',
-    'ピアノ': 'audio/bgm/piano_sad.mp3',
-    'ノイズ': 'audio/bgm/noise.mp3'
+    '風': 'audio/se/wind.mp3',
+    '砕く': 'audio/se/crack.mp3',
+    '炎': 'audio/se/fire.mp3',
+    'ピアノ': 'audio/se/piano_sad.mp3',
+    'ノイズ': 'audio/se/noise.mp3'
 };
 
 // 演出コマンドを処理（マークダウンから演出行を抽出して実行）
@@ -657,6 +679,12 @@ function executeEffect(cmdText) {
 
     // --- 音声演出 ---
 
+    // SE: ノイズ
+    if (cmdText.includes('ノイズ') && SOUND_ASSETS['ノイズ']) {
+        effectSe.src = SOUND_ASSETS['ノイズ'];
+        effectSe.volume = 0.3;
+        effectSe.play();
+    }
     // BGM: ピアノ
     if (cmdText.includes('ピアノ') && SOUND_ASSETS['ピアノ']) {
         effectBgm.src = SOUND_ASSETS['ピアノ'];
@@ -676,6 +704,7 @@ function executeEffect(cmdText) {
     // SE: 炎
     if (cmdText.includes('炎') && SOUND_ASSETS['炎']) {
         effectBgm.src = SOUND_ASSETS['炎'];
+        effectBgm.volume = 0.4;
         effectBgm.play();
     }
     

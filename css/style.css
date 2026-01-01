@@ -762,6 +762,7 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.1); /* 薄い縁取りでガラスの厚みを表現 */
     border-radius: 8px; /* 角を少し丸める */
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); /* 影を落として浮遊感を出す */
+    padding: 1.5rem 2rem; /* 左右に余白を追加 */
 }
 
 /* メニューボタンや選択肢ボタンにも適用 */
