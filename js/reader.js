@@ -9,11 +9,11 @@ let currentSectionIndex = 0;
 const backgroundKeywords = {
     // オフィス・会議室シーン
     'images/office_night.jpg': ['深夜の誰もいないフロア', '守衛すら帰った深夜', '残業で深夜'],
-    'images/bg_office_morning.jpg': ['出社した朝のオフィス', '朝のオフィスフロア'],
+    'images/bg_office_morning.jpg': ['5月30日 最後の日', '朝のオフィスフロア'],
     'images/bg_office_sunset.jpg': ['経理部のフロアに戻ると、犬飼課長が満面の笑みで待っていた。', '退勤時間の夕焼け'],
     'images/glass_meeting_room.jpg': ['4月2日 水曜日 20:00', '外からは中がよく見える会議室'],
-    'images/meeting_room_dark_blinds.jpg': ['第3会議室（密室）', 'ブラインドを閉めた密室'],
-    'images/office_corridor.jpg': ['4月16日 嵐の前の静けさ', '廃棄された廃気の間'],
+    'images/meeting_room_dark_blinds.jpg': ['第3会議室（密室）', '個室に入ってきた私たちを見て、犬飼は不快そうに眉をひそめた。', '第3会議室 10:00'],
+    'images/office_corridor.jpg': ['4月16日 嵐の前の静けさ', '6月14日 最後の残業'],
     
     // 資料室・システム室
     'images/archive_room.jpg': ['資料室の棚の間を抜けて', '紙の匂いが充満する資料室'],
@@ -49,7 +49,7 @@ const backgroundKeywords = {
     'images/event_security_camera.jpg': ['防犯カメラのレンズが', '監視カメラの赤いランプ'],
     
     // 室内・個人空間
-    'images/bedroom_night_dark.jpg': ['3月29日 土曜日 深夜', '私の部屋の暗闇'],
+    'images/bedroom_night_dark.jpg': ['3月29日 土曜日 深夜', '6月2日 残された選択'],
     'images/empty_desk.jpg': ['空っぽのデスクに残された', '荷物をまとめた後の机', '社員証を返却した後'],
     'images/office_locker_room.jpg': ['ロッカー室の扉を開けて', '更衣室の静寂'],
     
@@ -59,14 +59,18 @@ const backgroundKeywords = {
     // 晴れ・夜
     'images/bg_window_cloudy_day.jpg': ['曇り空が広がって', '曇った空の下'],
     
-    // === イベント画像 ===
-    // route_a2用の特殊イベント
+    // === イベント画像 ===    // 二人で歩くシーン
+    'images/event_walking_together.jpg': ['辞めてきちゃいました', '私たちは並んで歩き出した'],
+    
+    // 彼女が笑顔
+    'images/event_rina_smile.jpg': ['私が答えると、彼女は花が咲くように笑った', '悪戯っぽく笑った✖'],
+        // route_a2用の特殊イベント
     'images/event_murder_ashtray.jpg': ['重厚なガラス製の灰皿を取り出した', '梨奈が灰皿を振り上げる', '鈕い音が響いた'],
     'images/event_battery_fire.jpg': ['UPS（無停電電源装置）のパネルを開けた', 'リミッター、切ります', '猛烈な白煙が噴き出した'],
     'images/event_burning_embrace.jpg': ['爆発的な赤い閃光が視界を埋め尽くす', '炎の中で、私は梨奈を抱きしめた', '骨まで溶かす熱風'],
     
     // 偽造契約書関連
-    'images/event_forged_document_closeup.jpg': ['これが、例の契約書です', '4月20日 深夜 オフィス', '偽造した契約書があ✖✖'],
+    'images/event_forged_document_closeup.jpg': ['これが、例の契約書です', '4月20日 深夜 オフィス', '私が震える手で書いた署名がある'],
     
     // 裏帳簿暴露
     'images/event_ledger_revelation.jpg': ['裏帳簿が表示された', '改ざん前の数値', '苦悩を綴った日記'],
@@ -79,7 +83,15 @@ const backgroundKeywords = {
     
     // トイレでの親密シーン
     'images/event_toilet_intimacy.jpg': ['彼女は素早くドアを閉め、再び内鍵をかけた', 'トイレの個室に鍵を換けて二人きり'],
-    'images/bg_window_clear_night.jpg': ['3月28日 金曜日 21:00', '星が見える']
+    'images/bg_window_clear_night.jpg': ['3月28日 金曜日 21:00', '星が見える'],
+    
+    // エピローグC（Accountability）専用
+    'images/epilogue_c_01.jpg': ['公式には「不幸な事故」として処理された'],
+    'images/epilogue_c_02.jpg': ['今日は定時で上がって、パーッと行こうか'],
+    'images/epilogue_c_03.jpg': ['猿渡のパソコンから、不快な警告音が鳴り響いた'],
+    'images/epilogue_c_04.jpg': ['狂気的な職人魂だった'],
+    'images/epilogue_c_05.jpg': ['画面上のマウスカーソルが、機械的な正確さで'],
+    'images/epilogue_c_06.jpg': ['堂々と通用口へと歩き出した']
 };
 
 // ファイルごとのデフォルト背景画像マッピング
@@ -88,13 +100,14 @@ const backgroundImages = {
     'story_ch2.md': 'images/bg_rain_window_evening.jpg',
     'story_ch3.md': 'images/rain_window_day.jpg',
     'routes/route_a1.md': 'images/office_night.jpg',
-    'routes/route_a2.md': 'images/glass_meeting_room.jpg',
+    'routes/route_a2.md': 'images/meeting_room_dark_blinds.jpg',
     'routes/route_b1.md': 'images/rain_window.jpg',
     'routes/route_b2.md': 'images/office_night.jpg',
     'endings/ending_true.md': 'images/empty_desk.jpg',
     'endings/ending_bad.md': 'images/underwater_room.jpg',
     'endings/ending_dead.md': 'images/underwater_room.jpg',
-    'endings/ending_normal.md': 'images/rainy_crossing.jpg'
+    'endings/ending_normal.md': 'images/rainy_crossing.jpg',
+    'endings/epilogue_c.md': 'images/epilogue_c_01.jpg'
 };
 
 // 背景画像を変更するヘルパー関数
