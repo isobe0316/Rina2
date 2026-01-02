@@ -6,6 +6,7 @@ PNG/JPG画像をリサイズ＆圧縮してJPGに変換します
 """
 
 import os
+import json
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 from PIL import Image
@@ -18,11 +19,17 @@ class ImageCompressorGUI:
         self.root.geometry("650x450")
         self.root.resizable(False, False)
         
+        # 設定ファイルのパス
+        self.config_file = os.path.join(os.path.dirname(__file__), '.compressor_config.json')
+        
         # デフォルト設定
         self.input_folder = tk.StringVar()
         self.output_folder = tk.StringVar()
         self.max_width = tk.IntVar(value=1920)
         self.quality = tk.IntVar(value=85)
+        
+        # 前回の設定を読み込み
+        self.load_config()
         
         self.create_widgets()
     
@@ -119,10 +126,12 @@ class ImageCompressorGUI:
         self.log_text.config(yscrollcommand=scrollbar.set)
     
     def select_input_folder(self):
-        folder = filedialog.askdirectory(title="元画像フォルダを選択")
+        initial_dir = self.input_folder.get() or os.path.expanduser("~")
+        folder = filedialog.askdirectory(title="元画像フォルダを選択", initialdir=initial_dir)
         if folder:
             self.input_folder.set(folder)
             self.log(f"入力フォルダ: {folder}")
+            self.save_config()
             
             # 出力フォルダが未設定なら自動設定
             if not self.output_folder.get():
@@ -131,10 +140,39 @@ class ImageCompressorGUI:
                 self.log(f"出力フォルダ: {default_output}")
     
     def select_output_folder(self):
-        folder = filedialog.askdirectory(title="保存先フォルダを選択")
+        initial_dir = self.output_folder.get() or os.path.expanduser("~")
+        folder = filedialog.askdirectory(title="保存先フォルダを選択", initialdir=initial_dir)
         if folder:
             self.output_folder.set(folder)
             self.log(f"出力フォルダ: {folder}")
+            self.save_config()
+    
+    def load_config(self):
+        """前回の設定を読み込み"""
+        try:
+            if os.path.exists(self.config_file):
+                with open(self.config_file, 'r', encoding='utf-8') as f:
+                    config = json.load(f)
+                    self.input_folder.set(config.get('input_folder', ''))
+                    self.output_folder.set(config.get('output_folder', ''))
+                    self.max_width.set(config.get('max_width', 1920))
+                    self.quality.set(config.get('quality', 85))
+        except Exception as e:
+            print(f"設定読み込みエラー: {e}")
+    
+    def save_config(self):
+        """現在の設定を保存"""
+        try:
+            config = {
+                'input_folder': self.input_folder.get(),
+                'output_folder': self.output_folder.get(),
+                'max_width': self.max_width.get(),
+                'quality': self.quality.get()
+            }
+            with open(self.config_file, 'w', encoding='utf-8') as f:
+                json.dump(config, f, ensure_ascii=False, indent=2)
+        except Exception as e:
+            print(f"設定保存エラー: {e}")
     
     def log(self, message):
         self.log_text.config(state='normal')
@@ -163,6 +201,9 @@ class ImageCompressorGUI:
         
         # ボタン無効化
         self.compress_button.config(state='disabled')
+        
+        # 設定を保存
+        self.save_config()
         
         try:
             self.compress_images(input_path, output_path)
