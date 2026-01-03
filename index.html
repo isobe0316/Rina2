@@ -148,36 +148,112 @@
             </div>
         </div>
         
-        <!-- 設定画面 -->
+        <!-- BGM試聴画面 -->
         <div id="settings-view" class="settings-view hidden">
             <div class="settings-content">
-                <h2>設定</h2>
+                <h2>BGM試聴</h2>
+                <p class="settings-desc">この物語で使用されているBGMを試聴できます。</p>
                 
-                <section class="settings-section">
-                    <h3>背景画像キーワード設定</h3>
-                    <p class="settings-desc">テキスト中のキーワードを検出して背景画像を自動切り替えします。キーワードが短すぎると頻繁に切り替わるので、適切な長さに調整してください。</p>
+                <div class="music-player">
+                    <!-- 全曲再生コントロール -->
+                    <div class="playlist-controls">
+                        <button id="play-all-btn" onclick="playAllTracks()" class="play-all-btn">
+                            <span>▶</span> 全曲を順番に再生
+                        </button>
+                        <button id="stop-all-btn" onclick="stopAllTracks()" class="stop-btn" style="display:none;">
+                            <span>■</span> 停止
+                        </button>
+                    </div>
                     
-                    <div class="keyword-editor">
-                        <label>画像を選択：</label>
-                        <select id="image-select" onchange="loadKeywordsForImage()">
-                            <option value="">-- 画像を選択 --</option>
-                        </select>
-                        
-                        <div id="keyword-list" class="keyword-list" style="display:none;">
-                            <label>検出キーワード（カンマ区切り）：</label>
-                            <textarea id="keywords-input" rows="4" placeholder="例: 深夜, 誰もいないフロア, 残業"></textarea>
-                            <div style="margin-top: 1rem;">
-                                <button onclick="saveKeywords()" class="save-btn">保存</button>
-                                <button onclick="resetKeywords()" class="reset-btn">初期値に戻す</button>
+                    <!-- トラックリスト -->
+                    <div class="track-list">
+                        <!-- OP Theme 1 -->
+                        <div class="track-item" data-index="0">
+                            <div class="track-info">
+                                <div class="track-title">OPテーマ 1</div>
+                                <div class="track-desc">タイトル画面で流れる第1オープニング曲</div>
+                                <div class="track-file">audio/bgm/op_theme_1.mp3</div>
                             </div>
+                            <button class="track-play-btn" onclick="playTrack(0)">▶</button>
+                        </div>
+                        
+                        <!-- OP Theme 2 -->
+                        <div class="track-item" data-index="1">
+                            <div class="track-info">
+                                <div class="track-title">OPテーマ 2</div>
+                                <div class="track-desc">タイトル画面で流れる第2オープニング曲</div>
+                                <div class="track-file">audio/bgm/op_theme_2.mp3</div>
+                            </div>
+                            <button class="track-play-btn" onclick="playTrack(1)">▶</button>
+                        </div>
+                        
+                        <!-- OP Theme 3 -->
+                        <div class="track-item" data-index="2">
+                            <div class="track-info">
+                                <div class="track-title">OPテーマ 3</div>
+                                <div class="track-desc">タイトル画面で流れる第3オープニング曲</div>
+                                <div class="track-file">audio/bgm/op_theme_3.mp3</div>
+                            </div>
+                            <button class="track-play-btn" onclick="playTrack(2)">▶</button>
+                        </div>
+                        
+                        <!-- Story Opening -->
+                        <div class="track-item" data-index="3">
+                            <div class="track-info">
+                                <div class="track-title">ストーリーオープニング</div>
+                                <div class="track-desc">物語の導入部で流れる曲</div>
+                                <div class="track-file">audio/bgm/story_opening.mp3</div>
+                            </div>
+                            <button class="track-play-btn" onclick="playTrack(3)">▶</button>
+                        </div>
+                        
+                        <!-- Misaki Box Theme -->
+                        <div class="track-item" data-index="4">
+                            <div class="track-info">
+                                <div class="track-title">美咲の箱</div>
+                                <div class="track-desc">美咲の思い出、感情的なシーンで流れる曲</div>
+                                <div class="track-file">audio/bgm/misaki_box_theme.mp3</div>
+                            </div>
+                            <button class="track-play-btn" onclick="playTrack(4)">▶</button>
+                        </div>
+                        
+                        <!-- Choice Moment -->
+                        <div class="track-item" data-index="5">
+                            <div class="track-info">
+                                <div class="track-title">選択の瞬間</div>
+                                <div class="track-desc">重要な決断を迫られる場面で流れる緊張感ある曲</div>
+                                <div class="track-file">audio/bgm/choice_moment.mp3</div>
+                            </div>
+                            <button class="track-play-btn" onclick="playTrack(5)">▶</button>
+                        </div>
+                        
+                        <!-- True Ending -->
+                        <div class="track-item" data-index="6">
+                            <div class="track-info">
+                                <div class="track-title">TRUE ENDテーマ</div>
+                                <div class="track-desc">真エンディングで流れる希望と再生の曲</div>
+                                <div class="track-file">audio/bgm/true_ed.mp3</div>
+                            </div>
+                            <button class="track-play-btn" onclick="playTrack(6)">▶</button>
+                        </div>
+                        
+                        <!-- Bad/Dead Ending -->
+                        <div class="track-item" data-index="7">
+                            <div class="track-info">
+                                <div class="track-title">BAD/DEAD ENDテーマ</div>
+                                <div class="track-desc">バッドエンド・デッドエンドで流れる悲哀の曲</div>
+                                <div class="track-file">audio/bgm/bad_dead_ed.mp3</div>
+                            </div>
+                            <button class="track-play-btn" onclick="playTrack(7)">▶</button>
                         </div>
                     </div>
                     
-                    <div class="settings-note">
-                        <p>※設定はブラウザに保存されます。</p>
-                        <p>※「初期値に戻す」で元の設定に戻せます。</p>
+                    <!-- 現在再生中の表示 -->
+                    <div id="now-playing" class="now-playing" style="display:none;">
+                        <span class="now-playing-label">再生中:</span>
+                        <span id="now-playing-title"></span>
                     </div>
-                </section>
+                </div>
                 
                 <button class="back-btn" onclick="hideSettings()">戻る</button>
             </div>

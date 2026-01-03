@@ -27,88 +27,138 @@ function hideAbout() {
 // 設定画面の表示/非表示
 function showSettings() {
     document.getElementById('settings-view').classList.remove('hidden');
-    initSettingsPage();
+    // OPテーマを停止
+    if (typeof audioManager !== 'undefined') {
+        audioManager.stop(true);
+    }
 }
 
 function hideSettings() {
     document.getElementById('settings-view').classList.add('hidden');
-}
-
-// 設定ページの初期化
-function initSettingsPage() {
-    const select = document.getElementById('image-select');
-    select.innerHTML = '<option value="">-- 画像を選択 --</option>';
-    
-    // reader.jsから背景画像キーワードを取得（グローバルに公開する必要がある）
-    if (typeof backgroundKeywords !== 'undefined') {
-        const imageNames = Object.keys(backgroundKeywords);
-        imageNames.forEach(imagePath => {
-            const option = document.createElement('option');
-            option.value = imagePath;
-            option.textContent = imagePath.replace('images/', '');
-            select.appendChild(option);
-        });
+    // 再生中の試聴トラックを停止
+    stopAllTracks();
+    // OPテーマを再開
+    if (typeof audioManager !== 'undefined') {
+        audioManager.play('op', { loop: true, fadeIn: true });
     }
 }
 
-// 画像を選択したときにキーワードを読み込む
-function loadKeywordsForImage() {
-    const select = document.getElementById('image-select');
-    const imagePath = select.value;
-    const keywordList = document.getElementById('keyword-list');
-    const input = document.getElementById('keywords-input');
-    
-    if (!imagePath) {
-        keywordList.style.display = 'none';
-        return;
+// BGM試聴機能
+const musicTracks = [
+    { title: 'OPテーマ 1', file: 'audio/bgm/op_theme_1.mp3' },
+    { title: 'OPテーマ 2', file: 'audio/bgm/op_theme_2.mp3' },
+    { title: 'OPテーマ 3', file: 'audio/bgm/op_theme_3.mp3' },
+    { title: 'ストーリーオープニング', file: 'audio/bgm/story_opening.mp3' },
+    { title: '美咲の箱', file: 'audio/bgm/misaki_box_theme.mp3' },
+    { title: '選択の瞬間', file: 'audio/bgm/choice_moment.mp3' },
+    { title: 'TRUE ENDテーマ', file: 'audio/bgm/true_ed.mp3' },
+    { title: 'BAD/DEAD ENDテーマ', file: 'audio/bgm/bad_dead_ed.mp3' }
+];
+
+let currentAudio = null;
+let isPlayingAll = false;
+let currentTrackIndex = 0;
+
+// 個別トラック再生
+function playTrack(index) {
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
     }
     
-    keywordList.style.display = 'block';
+    const track = musicTracks[index];
+    currentAudio = new Audio(track.file);
+    currentTrackIndex = index;
     
-    // ローカルストレージから保存されたキーワードを読み込む
-    const savedKeywords = localStorage.getItem('bgKeywords_' + imagePath);
+    // 再生中表示を更新
+    updateNowPlaying(track.title);
     
-    if (savedKeywords) {
-        input.value = savedKeywords;
-    } else if (typeof backgroundKeywords !== 'undefined' && backgroundKeywords[imagePath]) {
-        // デフォルトのキーワードを表示
-        input.value = backgroundKeywords[imagePath].join(', ');
+    // 再生ボタンの状態を更新
+    updateTrackButtons(index);
+    
+    currentAudio.play();
+    
+    // 終了時の処理
+    currentAudio.onended = function() {
+        if (isPlayingAll) {
+            // 全曲再生モードの場合は次の曲へ
+            playNextTrack();
+        } else {
+            // 個別再生の場合は停止
+            hideNowPlaying();
+            resetTrackButtons();
+        }
+    };
+}
+
+// 次のトラックを再生
+function playNextTrack() {
+    currentTrackIndex++;
+    if (currentTrackIndex < musicTracks.length) {
+        playTrack(currentTrackIndex);
     } else {
-        input.value = '';
+        // 全曲終了
+        stopAllTracks();
     }
 }
 
-// キーワードを保存
-function saveKeywords() {
-    const select = document.getElementById('image-select');
-    const input = document.getElementById('keywords-input');
-    const imagePath = select.value;
-    
-    if (!imagePath) return;
-    
-    const keywords = input.value.trim();
-    localStorage.setItem('bgKeywords_' + imagePath, keywords);
-    
-    alert('保存しました！\n変更を反映するにはページをリロードしてください。');
+// 全曲再生
+function playAllTracks() {
+    isPlayingAll = true;
+    currentTrackIndex = 0;
+    document.getElementById('play-all-btn').style.display = 'none';
+    document.getElementById('stop-all-btn').style.display = 'inline-block';
+    playTrack(0);
 }
 
-// キーワードを初期値に戻す
-function resetKeywords() {
-    const select = document.getElementById('image-select');
-    const input = document.getElementById('keywords-input');
-    const imagePath = select.value;
-    
-    if (!imagePath) return;
-    
-    localStorage.removeItem('bgKeywords_' + imagePath);
-    
-    if (typeof backgroundKeywords !== 'undefined' && backgroundKeywords[imagePath]) {
-        input.value = backgroundKeywords[imagePath].join(', ');
-    } else {
-        input.value = '';
+// 再生停止
+function stopAllTracks() {
+    isPlayingAll = false;
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        currentAudio = null;
     }
-    
-    alert('初期値に戻しました！\n変更を反映するにはページをリロードしてください。');
+    document.getElementById('play-all-btn').style.display = 'inline-block';
+    document.getElementById('stop-all-btn').style.display = 'none';
+    hideNowPlaying();
+    resetTrackButtons();
+}
+
+// 再生中表示を更新
+function updateNowPlaying(title) {
+    const nowPlaying = document.getElementById('now-playing');
+    const nowPlayingTitle = document.getElementById('now-playing-title');
+    nowPlayingTitle.textContent = title;
+    nowPlaying.style.display = 'block';
+}
+
+// 再生中表示を非表示
+function hideNowPlaying() {
+    document.getElementById('now-playing').style.display = 'none';
+}
+
+// トラックボタンの状態を更新
+function updateTrackButtons(playingIndex) {
+    const buttons = document.querySelectorAll('.track-play-btn');
+    buttons.forEach((btn, index) => {
+        if (index === playingIndex) {
+            btn.textContent = '■';
+            btn.classList.add('playing');
+        } else {
+            btn.textContent = '▶';
+            btn.classList.remove('playing');
+        }
+    });
+}
+
+// トラックボタンをリセット
+function resetTrackButtons() {
+    const buttons = document.querySelectorAll('.track-play-btn');
+    buttons.forEach(btn => {
+        btn.textContent = '▶';
+        btn.classList.remove('playing');
+    });
 }
 
 // ESCキーで閉じる
