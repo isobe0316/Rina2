@@ -45,14 +45,14 @@ function hideSettings() {
 
 // BGM試聴機能
 const musicTracks = [
-    { title: 'OPテーマ 1', file: 'audio/bgm/op_theme_1.mp3' },
-    { title: 'OPテーマ 2', file: 'audio/bgm/op_theme_2.mp3' },
-    { title: 'OPテーマ 3', file: 'audio/bgm/op_theme_3.mp3' },
-    { title: 'ストーリーオープニング', file: 'audio/bgm/story_opening.mp3' },
-    { title: '美咲の箱', file: 'audio/bgm/misaki_box_theme.mp3' },
-    { title: '選択の瞬間', file: 'audio/bgm/choice_moment.mp3' },
-    { title: 'TRUE ENDテーマ', file: 'audio/bgm/true_ed.mp3' },
-    { title: 'BAD/DEAD ENDテーマ', file: 'audio/bgm/bad_dead_ed.mp3' }
+    { title: '硝子の箱 (The Glass Box)', file: 'audio/bgm/op_theme_1.mp3' },
+    { title: '沈黙の重さ (Weight of Silence)', file: 'audio/bgm/op_theme_2.mp3' },
+    { title: '見ないふり', file: 'audio/bgm/op_theme_3.mp3' },
+    { title: '埋まらない真実', file: 'audio/bgm/story_opening.mp3' },
+    { title: '君にならない理', file: 'audio/bgm/misaki_box_theme.mp3' },
+    { title: '一文字の共犯', file: 'audio/bgm/choice_moment.mp3' },
+    { title: '雨上がり、空白', file: 'audio/bgm/true_ed.mp3' },
+    { title: '氷位', file: 'audio/bgm/bad_dead_ed.mp3' }
 ];
 
 let currentAudio = null;
