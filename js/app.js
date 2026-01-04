@@ -45,14 +45,14 @@ function hideSettings() {
 
 // BGM試聴機能
 const musicTracks = [
-    { title: '硝子の箱 (The Glass Box)', file: 'audio/bgm/op_theme_1.mp3' },
-    { title: '沈黙の重さ (Weight of Silence)', file: 'audio/bgm/op_theme_2.mp3' },
-    { title: '見ないふり', file: 'audio/bgm/op_theme_3.mp3' },
-    { title: '埋まらない真実', file: 'audio/bgm/story_opening.mp3' },
-    { title: '君にならない理', file: 'audio/bgm/misaki_box_theme.mp3' },
-    { title: '一文字の共犯', file: 'audio/bgm/choice_moment.mp3' },
-    { title: '雨上がり、空白', file: 'audio/bgm/true_ed.mp3' },
-    { title: '氷位', file: 'audio/bgm/bad_dead_ed.mp3' }
+    { title: '硝子の箱 (The Glass Box)', file: 'audio/op_theme_1.mp3' },
+    { title: '沈黙の重さ (Weight of Silence)', file: 'audio/op_theme_2.mp3' },
+    { title: '見ないふり', file: 'audio/op_theme_3.mp3' },
+    { title: '埋まらない真実', file: 'audio/story_opening.mp3' },
+    { title: '盾にならない箱', file: 'audio/misaki_box_theme.mp3' },
+    { title: '一文字の共犯', file: 'audio/choice_moment.mp3' },
+    { title: '雨上がり、空白', file: 'audio/true_ed.mp3' },
+    { title: '氷位', file: 'audio/bad_dead_ed.mp3' }
 ];
 
 let currentAudio = null;
@@ -61,14 +61,36 @@ let currentTrackIndex = 0;
 
 // 個別トラック再生
 function playTrack(index) {
+    console.log(`=== playTrack called: index=${index} ===`);
+    
     if (currentAudio) {
+        console.log('Stopping previous audio');
         currentAudio.pause();
         currentAudio.currentTime = 0;
     }
     
     const track = musicTracks[index];
+    console.log('Track info:', track);
+    
     currentAudio = new Audio(track.file);
     currentTrackIndex = index;
+    
+    // エラーハンドリング
+    currentAudio.addEventListener('error', function(e) {
+        console.error('Audio error:', e);
+        console.error('Error details:', currentAudio.error);
+        alert(`音楽ファイルの読み込みに失敗しました: ${track.file}\nエラー: ${currentAudio.error ? currentAudio.error.message : 'Unknown error'}`);
+        hideNowPlaying();
+        resetTrackButtons();
+    });
+    
+    currentAudio.addEventListener('loadeddata', function() {
+        console.log('Audio loaded successfully');
+    });
+    
+    currentAudio.addEventListener('canplay', function() {
+        console.log('Audio can play');
+    });
     
     // 再生中表示を更新
     updateNowPlaying(track.title);
@@ -76,10 +98,23 @@ function playTrack(index) {
     // 再生ボタンの状態を更新
     updateTrackButtons(index);
     
-    currentAudio.play();
+    console.log('Attempting to play...');
+    const playPromise = currentAudio.play();
+    
+    if (playPromise !== undefined) {
+        playPromise.then(() => {
+            console.log('Playback started successfully');
+        }).catch(error => {
+            console.error('Playback failed:', error);
+            alert(`再生に失敗しました: ${error.message}`);
+            hideNowPlaying();
+            resetTrackButtons();
+        });
+    }
     
     // 終了時の処理
     currentAudio.onended = function() {
+        console.log('Audio ended');
         if (isPlayingAll) {
             // 全曲再生モードの場合は次の曲へ
             playNextTrack();
